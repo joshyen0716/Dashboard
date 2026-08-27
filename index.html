@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Josh · 財富自由儀表板</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;700&display=swap');
+
+  :root {
+    --bg: #0d0f14;
+    --surface: #141720;
+    --surface2: #1c2030;
+    --border: #252a3a;
+    --text: #e8eaf0;
+    --text-muted: #6b7280;
+    --text-dim: #9ca3af;
+    --accent: #4f8ef7;
+    --accent2: #7c6cf7;
+    --green: #34d399;
+    --red: #f87171;
+    --gold: #fbbf24;
+    --progress-bg: #1e2235;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    min-height: 100vh;
+    padding: 32px 24px 64px;
+  }
+
+  .container { max-width: 960px; margin: 0 auto; }
+
+  .header {
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .header-label { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+  .header-title { font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 700; }
+  .header-sub { color: var(--text-muted); font-size: 13px; margin-top: 2px; }
+
+  /* 即時數據列 */
+  .live-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .live-item { display: flex; align-items: center; gap: 10px; }
+  .live-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  .live-value { font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 600; }
+  .live-change { font-size: 12px; }
+  .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .live-sep { width: 1px; height: 28px; background: var(--border); }
+  .live-status { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; margin-left: auto; }
+
+  /* 手動編輯區 */
+  .edit-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  .edit-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px; font-weight: 600;
+    color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .edit-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+  }
+  .edit-field label {
+    display: block; font-size: 11px; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;
+  }
+  .edit-field input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    padding: 10px 12px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .edit-field input:focus { border-color: var(--accent); }
+  .edit-actions { display: flex; gap: 10px; margin-top: 16px; }
+  .btn {
+    padding: 10px 20px; border-radius: 8px; border: none;
+    font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: opacity 0.2s;
+  }
+  .btn:hover { opacity: 0.85; }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-ghost { background: var(--surface2); color: var(--text-dim); border: 1px solid var(--border); }
+  .save-msg { font-size: 12px; color: var(--green); margin-top: 8px; display: none; }
+
+  /* Hero 進度 */
+  .hero {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-bottom: 20px;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+  }
+  .hero-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 16px; }
+  .hero-amount { font-family: 'Space Grotesk', sans-serif; font-size: 44px; font-weight: 700; letter-spacing: -1px; line-height: 1; background: linear-gradient(135deg, #e8eaf0, #9ca3af); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .hero-label { color: var(--text-muted); font-size: 12px; margin-bottom: 6px; }
+  .hero-target-num { font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 500; color: var(--text-dim); }
+  .progress-bar-bg { background: var(--progress-bg); border-radius: 99px; height: 10px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--accent), var(--accent2)); width: 0%; transition: width 1.5s cubic-bezier(0.22,1,0.36,1); }
+  .progress-meta { display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: var(--text-muted); }
+  .progress-pct { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; color: var(--accent); }
+
+  /* KPI */
+  .kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 20px; }
+  @media(max-width:680px){ .kpi-grid{grid-template-columns:repeat(2,1fr)} .hero-amount{font-size:30px} }
+  .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 16px; }
+  .kpi-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+  .kpi-value { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 600; }
+  .kpi-value.green { color: var(--green); }
+  .kpi-value.gold { color: var(--gold); }
+  .kpi-value.red { color: var(--red); }
+  .kpi-sub { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+
+  /* 圖表 */
+  .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  @media(max-width:680px){ .charts-grid{grid-template-columns:1fr} }
+  .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
+  .chart-title { font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 600; color: var(--text-dim); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.08em; }
+  .chart-wrap { position: relative; height: 220px; }
+
+  /* 績效 */
+  .perf-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; margin-bottom: 20px; }
+  .perf-title { font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 600; color: var(--text-dim); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.08em; }
+  .perf-bars { display: flex; flex-direction: column; gap: 14px; }
+  .perf-row { display: flex; align-items: center; gap: 12px; }
+  .perf-year { font-family: 'Space Grotesk', sans-serif; font-size: 12px; font-weight: 500; color: var(--text-muted); width: 36px; flex-shrink: 0; }
+  .perf-bar-wrap { flex: 1; height: 8px; background: var(--progress-bg); border-radius: 99px; overflow: hidden; }
+  .perf-bar { height: 100%; border-radius: 99px; transition: width 1.2s cubic-bezier(0.22,1,0.36,1); }
+  .perf-pct { font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 600; width: 56px; text-align: right; flex-shrink: 0; }
+
+  /* 里程碑 */
+  .milestone-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; margin-bottom: 20px; }
+  .milestone-title { font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 600; color: var(--text-dim); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.08em; }
+  .milestones { display: flex; flex-direction: column; gap: 10px; }
+  .milestone-row { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 10px; background: var(--surface2); }
+  .milestone-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .milestone-dot.done { background: var(--green); box-shadow: 0 0 8px var(--green); }
+  .milestone-dot.pending { background: var(--border); }
+  .milestone-row-info { flex: 1; }
+  .milestone-name { font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 500; }
+  .milestone-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .milestone-tag { font-size: 11px; padding: 3px 10px; border-radius: 99px; font-family: 'Space Grotesk', sans-serif; font-weight: 500; }
+  .milestone-tag.done { background: rgba(52,211,153,0.12); color: var(--green); }
+  .milestone-tag.pending { background: rgba(79,142,247,0.1); color: var(--accent); }
+
+  /* 負債 */
+  .loan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+  @media(max-width:680px){ .loan-grid{grid-template-columns:1fr} }
+  .loan-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+  .loan-name { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+  .loan-amount { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 600; color: var(--red); margin-bottom: 4px; }
+  .loan-detail { font-size: 12px; color: var(--text-muted); line-height: 1.8; }
+
+  .footer { text-align: center; color: var(--text-muted); font-size: 12px; margin-top: 32px; }
+  .spinner { display: inline-block; width: 10px; height: 10px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <div class="header-label">Personal Finance Dashboard</div>
+      <div class="header-title">Josh · 財富自由追蹤</div>
+      <div class="header-sub">目標 3,000萬 · 45歲退休計畫</div>
+    </div>
+    <div style="font-size:12px;color:var(--text-muted)" id="lastUpdate">—</div>
+  </div>
+
+  <!-- 即時數據列 -->
+  <div class="live-bar">
+    <div class="live-item">
+      <div>
+        <div class="live-label">0050</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="live-value" id="live-0050">—</div>
+          <div class="live-change" id="live-0050-chg">—</div>
+        </div>
+      </div>
+    </div>
+    <div class="live-sep"></div>
+    <div class="live-item">
+      <div>
+        <div class="live-label">S&P 500</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="live-value" id="live-sp500">—</div>
+          <div class="live-change" id="live-sp500-chg">—</div>
+        </div>
+      </div>
+    </div>
+    <div class="live-sep"></div>
+    <div class="live-item">
+      <div>
+        <div class="live-label">QQQ</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="live-value" id="live-qqq">—</div>
+          <div class="live-change" id="live-qqq-chg">—</div>
+        </div>
+      </div>
+    </div>
+    <div class="live-sep"></div>
+    <div class="live-item">
+      <div>
+        <div class="live-label">USD/TWD</div>
+        <div class="live-value" id="live-usd">—</div>
+      </div>
+    </div>
+    <div class="live-status">
+      <div class="live-dot" id="live-dot"></div>
+      <span id="live-status-text">抓取中...</span>
+    </div>
+  </div>
+
+  <!-- 手動編輯區 -->
+  <div class="edit-card">
+    <div class="edit-title">
+      <span>✏️</span> 手動更新資產數據
+    </div>
+    <div class="edit-grid">
+      <div class="edit-field">
+        <label>總資產 (NT$)</label>
+        <input type="number" id="inp-total" placeholder="14854278">
+      </div>
+      <div class="edit-field">
+        <label>美股總值 (NT$)</label>
+        <input type="number" id="inp-us" placeholder="7373463">
+      </div>
+      <div class="edit-field">
+        <label>台股總值 (NT$)</label>
+        <input type="number" id="inp-tw" placeholder="7859752">
+      </div>
+      <div class="edit-field">
+        <label>現金/其他 (NT$)</label>
+        <input type="number" id="inp-cash" placeholder="621063">
+      </div>
+      <div class="edit-field">
+        <label>信貸一剩餘期數</label>
+        <input type="number" id="inp-loan1m" placeholder="52">
+      </div>
+      <div class="edit-field">
+        <label>信貸二剩餘期數</label>
+        <input type="number" id="inp-loan2m" placeholder="84">
+      </div>
+    </div>
+    <div class="edit-actions">
+      <button class="btn btn-primary" onclick="saveData()">儲存並更新</button>
+      <button class="btn btn-ghost" onclick="resetData()">重設為預設值</button>
+    </div>
+    <div class="save-msg" id="save-msg">✓ 已儲存，儀表板已更新</div>
+  </div>
+
+  <!-- Hero 進度 -->
+  <div class="hero">
+    <div class="hero-top">
+      <div>
+        <div class="hero-label">目前總資產</div>
+        <div class="hero-amount" id="display-total">NT$ 1,485萬</div>
+      </div>
+      <div style="text-align:right">
+        <div class="hero-label">目標</div>
+        <div class="hero-target-num">NT$ 3,000萬</div>
+        <div style="margin-top:4px"><span class="progress-pct" id="pctDisplay">49.5%</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progressBar"></div>
+      </div>
+      <div class="progress-meta">
+        <span>NT$ 0</span>
+        <span>還差 <strong style="color:var(--text)" id="display-gap">NT$ 1,515萬</strong></span>
+        <span>NT$ 3,000萬</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI -->
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-label">年齡</div>
+      <div class="kpi-value">39 歲</div>
+      <div class="kpi-sub">目標 45 歲退休</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">倒數時間</div>
+      <div class="kpi-value gold">6 年</div>
+      <div class="kpi-sub">約 72 個月</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">每年須增幅</div>
+      <div class="kpi-value green" id="display-annual">約 253萬</div>
+      <div class="kpi-sub">含投資增值</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">2025 年報酬率</div>
+      <div class="kpi-value green">+50.97%</div>
+      <div class="kpi-sub">美股表現強勁</div>
+    </div>
+  </div>
+
+  <!-- 圖表 -->
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title">資產配置</div>
+      <div class="chart-wrap"><canvas id="allocChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">台股 vs 美股</div>
+      <div class="chart-wrap"><canvas id="splitChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- 年度績效 -->
+  <div class="perf-card">
+    <div class="perf-title">歷年投資組合報酬率</div>
+    <div class="perf-bars" id="perfBars"></div>
+  </div>
+
+  <!-- 里程碑 -->
+  <div class="milestone-card">
+    <div class="milestone-title">資產里程碑</div>
+    <div class="milestones">
+      <div class="milestone-row">
+        <div class="milestone-dot done"></div>
+        <div class="milestone-row-info">
+          <div class="milestone-name">NT$ 330萬</div>
+          <div class="milestone-sub">2023年2月達成</div>
+        </div>
+        <span class="milestone-tag done">✓ 完成</span>
+      </div>
+      <div class="milestone-row">
+        <div class="milestone-dot done"></div>
+        <div class="milestone-row-info">
+          <div class="milestone-name">NT$ 500萬</div>
+          <div class="milestone-sub">2024年2月達成</div>
+        </div>
+        <span class="milestone-tag done">✓ 完成</span>
+      </div>
+      <div class="milestone-row">
+        <div class="milestone-dot done"></div>
+        <div class="milestone-row-info">
+          <div class="milestone-name">NT$ 1,485萬（現況）</div>
+          <div class="milestone-sub">2026年8月</div>
+        </div>
+        <span class="milestone-tag done">✓ 目前</span>
+      </div>
+      <div class="milestone-row">
+        <div class="milestone-dot pending"></div>
+        <div class="milestone-row-info">
+          <div class="milestone-name">NT$ 2,000萬</div>
+          <div class="milestone-sub">預估 2027–2028 年</div>
+        </div>
+        <span class="milestone-tag pending">進行中</span>
+      </div>
+      <div class="milestone-row">
+        <div class="milestone-dot pending"></div>
+        <div class="milestone-row-info">
+          <div class="milestone-name">NT$ 3,000萬 🎯</div>
+          <div class="milestone-sub">目標 2031年（45歲）</div>
+        </div>
+        <span class="milestone-tag pending">目標</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 負債 -->
+  <div class="loan-grid">
+    <div class="loan-card">
+      <div class="loan-name">信貸第一筆</div>
+      <div class="loan-amount">NT$ 199萬</div>
+      <div class="loan-detail">
+        月繳 $35,000 · 5年期<br>
+        剩餘 <span id="display-loan1m">52</span> 期<br>
+        利率 ~3.5%
+      </div>
+    </div>
+    <div class="loan-card">
+      <div class="loan-name">信貸第二筆</div>
+      <div class="loan-amount">NT$ 383萬</div>
+      <div class="loan-detail">
+        月繳 $48,000 · 7年期<br>
+        剩餘 <span id="display-loan2m">84</span> 期<br>
+        利率 3.5%
+      </div>
+    </div>
+  </div>
+
+  <div class="kpi-grid" style="margin-bottom:24px">
+    <div class="kpi">
+      <div class="kpi-label">負債總額</div>
+      <div class="kpi-value red">NT$ 582萬</div>
+      <div class="kpi-sub">兩筆信貸合計</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">月還款合計</div>
+      <div class="kpi-value red">NT$ 83,000</div>
+      <div class="kpi-sub">佔月薪約 50%</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">淨資產</div>
+      <div class="kpi-value green" id="display-net">NT$ 903萬</div>
+      <div class="kpi-sub">總資產 - 負債</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">槓桿配置</div>
+      <div class="kpi-value" style="font-size:14px">70% QQQ</div>
+      <div class="kpi-sub">30% 短期債</div>
+    </div>
+  </div>
+
+  <div class="footer" id="footer-update">最後更新：載入中...</div>
+</div>
+
+<script>
+// ── 預設資料 ──
+const DEFAULTS = {
+  total: 14854278,
+  us: 7373463,
+  tw: 7859752,
+  cash: 621063,
+  loan1m: 52,
+  loan2m: 84,
+};
+const GOAL = 30000000;
+const LOAN_TOTAL = 5820000;
+
+// ── localStorage 讀寫 ──
+function loadData() {
+  try {
+    const saved = localStorage.getItem('joshDashboard');
+    return saved ? JSON.parse(saved) : { ...DEFAULTS };
+  } catch(e) { return { ...DEFAULTS }; }
+}
+function saveData() {
+  const d = {
+    total: parseFloat(document.getElementById('inp-total').value) || state.total,
+    us:    parseFloat(document.getElementById('inp-us').value)    || state.us,
+    tw:    parseFloat(document.getElementById('inp-tw').value)    || state.tw,
+    cash:  parseFloat(document.getElementById('inp-cash').value)  || state.cash,
+    loan1m: parseInt(document.getElementById('inp-loan1m').value) || state.loan1m,
+    loan2m: parseInt(document.getElementById('inp-loan2m').value) || state.loan2m,
+    savedAt: new Date().toLocaleString('zh-TW'),
+  };
+  localStorage.setItem('joshDashboard', JSON.stringify(d));
+  Object.assign(state, d);
+  renderDashboard();
+  const msg = document.getElementById('save-msg');
+  msg.style.display = 'block';
+  setTimeout(() => msg.style.display = 'none', 3000);
+}
+function resetData() {
+  localStorage.removeItem('joshDashboard');
+  Object.assign(state, DEFAULTS);
+  ['total','us','tw','cash','loan1m','loan2m'].forEach(k => {
+    document.getElementById('inp-'+k).value = '';
+  });
+  renderDashboard();
+}
+
+let state = loadData();
+
+// ── 圖表 ──
+let allocChart, splitChart;
+
+function initCharts() {
+  const tooltip = {
+    backgroundColor: '#1c2030', borderColor: '#252a3a', borderWidth: 1,
+    titleColor: '#e8eaf0', bodyColor: '#9ca3af', padding: 10,
+  };
+  const legendLabels = { color: '#9ca3af', font: { family: 'Inter', size: 12 }, boxWidth: 12, padding: 14 };
+
+  allocChart = new Chart(document.getElementById('allocChart').getContext('2d'), {
+    type: 'doughnut',
+    data: {
+      labels: ['美股', '台股', '現金/其他'],
+      datasets: [{ data: [state.us, state.tw, state.cash],
+        backgroundColor: ['#4f8ef7','#7c6cf7','#2dd4bf'],
+        borderColor: '#141720', borderWidth: 3, hoverOffset: 6 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: '68%',
+      plugins: { legend: { labels: legendLabels }, tooltip: { ...tooltip,
+        callbacks: { label: ctx => ` NT$ ${(ctx.parsed/10000).toFixed(0)}萬 (${((ctx.parsed/state.total)*100).toFixed(1)}%)` }
+      }}
+    }
+  });
+
+  splitChart = new Chart(document.getElementById('splitChart').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: ['美股', '台股', '現金'],
+      datasets: [{ data: [state.us, state.tw, state.cash],
+        backgroundColor: ['#4f8ef7','#7c6cf7','#2dd4bf'],
+        borderRadius: 6, borderSkipped: false }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+      plugins: { legend: { display: false }, tooltip: { ...tooltip,
+        callbacks: { label: ctx => ` NT$ ${(ctx.parsed.x/10000).toFixed(0)}萬` }
+      }},
+      scales: {
+        x: { ticks: { color:'#6b7280', callback: v=>`${(v/10000).toFixed(0)}萬`, font:{size:11} }, grid:{color:'#1e2235'} },
+        y: { ticks: { color:'#9ca3af', font:{size:12} }, grid:{display:false} }
+      }
+    }
+  });
+}
+
+function updateCharts() {
+  allocChart.data.datasets[0].data = [state.us, state.tw, state.cash];
+  splitChart.data.datasets[0].data = [state.us, state.tw, state.cash];
+  allocChart.update(); splitChart.update();
+}
+
+// ── 儀表板渲染 ──
+function fmt(n) { return 'NT$ ' + (n/10000).toFixed(0) + '萬'; }
+
+function renderDashboard() {
+  const pct = (state.total / GOAL) * 100;
+  const gap = GOAL - state.total;
+  const net = state.total - LOAN_TOTAL;
+  const annual = gap / 6;
+
+  document.getElementById('display-total').textContent = fmt(state.total);
+  document.getElementById('pctDisplay').textContent = pct.toFixed(1) + '%';
+  document.getElementById('progressBar').style.width = Math.min(pct, 100) + '%';
+  document.getElementById('display-gap').textContent = fmt(gap);
+  document.getElementById('display-annual').textContent = '約 ' + (annual/10000).toFixed(0) + '萬';
+  document.getElementById('display-net').textContent = fmt(net);
+  document.getElementById('display-loan1m').textContent = state.loan1m;
+  document.getElementById('display-loan2m').textContent = state.loan2m;
+
+  const now = new Date().toLocaleString('zh-TW');
+  document.getElementById('lastUpdate').textContent = '更新：' + now;
+  document.getElementById('footer-update').textContent = '最後更新：' + now + (state.savedAt ? '　儲存：' + state.savedAt : '');
+
+  if (allocChart) updateCharts();
+}
+
+// ── 年度績效 ──
+function renderPerf() {
+  const perfData = [
+    { year: '2025', pct: 50.97, color: '#34d399' },
+    { year: '2024', pct: 46.95, color: '#34d399' },
+    { year: '2023', pct: 26.75, color: '#34d399' },
+    { year: '2022', pct: -10.69, color: '#f87171' },
+    { year: '2021', pct: 12.36, color: '#34d399' },
+  ];
+  const container = document.getElementById('perfBars');
+  container.innerHTML = '';
+  perfData.forEach(d => {
+    const bw = (Math.abs(d.pct) / 55) * 75;
+    container.innerHTML += `
+      <div class="perf-row">
+        <div class="perf-year">${d.year}</div>
+        <div class="perf-bar-wrap">
+          <div class="perf-bar" data-width="${bw}" style="background:${d.color};width:0%"></div>
+        </div>
+        <div class="perf-pct" style="color:${d.color}">${d.pct>0?'+':''}${d.pct.toFixed(1)}%</div>
+      </div>`;
+  });
+  setTimeout(() => {
+    document.querySelectorAll('.perf-bar').forEach(b => b.style.width = b.dataset.width + '%');
+  }, 400);
+}
+
+// ── 即時股價（Yahoo Finance via allorigins proxy）──
+async function fetchQuote(symbol) {
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=1d`;
+  const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+  const res = await fetch(proxy);
+  const json = await res.json();
+  const data = JSON.parse(json.contents);
+  const meta = data.chart.result[0].meta;
+  return {
+    price: meta.regularMarketPrice,
+    prev: meta.previousClose,
+    change: meta.regularMarketPrice - meta.previousClose,
+    changePct: ((meta.regularMarketPrice - meta.previousClose) / meta.previousClose) * 100,
+  };
+}
+
+function setQuote(elId, chgId, q, prefix='', decimals=2) {
+  const el = document.getElementById(elId);
+  const chgEl = document.getElementById(chgId);
+  if (!el) return;
+  el.textContent = prefix + q.price.toFixed(decimals);
+  const sign = q.change >= 0 ? '+' : '';
+  chgEl.textContent = `${sign}${q.changePct.toFixed(2)}%`;
+  chgEl.style.color = q.change >= 0 ? '#34d399' : '#f87171';
+}
+
+async function fetchAllQuotes() {
+  const dot = document.getElementById('live-dot');
+  const statusEl = document.getElementById('live-status-text');
+  dot.style.background = '#fbbf24';
+  statusEl.textContent = '抓取中...';
+
+  try {
+    const [tw50, sp500, qqq, usd] = await Promise.all([
+      fetchQuote('0050.TW'),
+      fetchQuote('^GSPC'),
+      fetchQuote('QQQ'),
+      fetchQuote('TWD=X'),
+    ]);
+
+    setQuote('live-0050', 'live-0050-chg', tw50, 'NT$ ', 2);
+    setQuote('live-sp500', 'live-sp500-chg', sp500, '', 0);
+    setQuote('live-qqq', 'live-qqq-chg', qqq, '$', 2);
+
+    const usdEl = document.getElementById('live-usd');
+    usdEl.textContent = (1 / usd.price).toFixed(3);
+
+    dot.style.background = '#34d399';
+    dot.style.boxShadow = '0 0 6px #34d399';
+    statusEl.textContent = '即時數據';
+  } catch(e) {
+    dot.style.background = '#f87171';
+    dot.style.boxShadow = 'none';
+    statusEl.textContent = '數據暫時無法取得';
+    console.warn('Quote fetch failed:', e);
+  }
+}
+
+// ── 啟動 ──
+window.addEventListener('load', () => {
+  initCharts();
+  renderDashboard();
+  renderPerf();
+
+  // 填入儲存的數值到input
+  if (state.total !== DEFAULTS.total) document.getElementById('inp-total').value = state.total;
+  if (state.us !== DEFAULTS.us)       document.getElementById('inp-us').value = state.us;
+  if (state.tw !== DEFAULTS.tw)       document.getElementById('inp-tw').value = state.tw;
+  if (state.cash !== DEFAULTS.cash)   document.getElementById('inp-cash').value = state.cash;
+
+  setTimeout(() => {
+    document.getElementById('progressBar').style.width = Math.min((state.total/GOAL)*100, 100) + '%';
+  }, 300);
+
+  fetchAllQuotes();
+  // 每5分鐘自動重抓
+  setInterval(fetchAllQuotes, 5 * 60 * 1000);
+});
+</script>
+</body>
+</html>
