@@ -36,6 +36,35 @@
   }
 
   .container { max-width: 960px; margin: 0 auto; }
+  .dashboard-hidden { display: none; }
+
+  /* 鎖定畫面 */
+  .lock-screen {
+    position: fixed; inset: 0; background: var(--bg); z-index: 999;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .lock-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+    padding: 36px 32px; width: 100%; max-width: 360px; text-align: center;
+  }
+  .lock-icon { font-size: 30px; margin-bottom: 10px; }
+  .lock-title { font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+  .lock-sub { color: var(--text-muted); font-size: 12px; margin-bottom: 22px; }
+  .lock-input {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;
+    color: var(--text); font-size: 15px; padding: 12px 14px; outline: none; text-align: center;
+    letter-spacing: 2px; transition: border-color 0.15s;
+  }
+  .lock-input:focus { border-color: var(--accent); }
+  .lock-input.shake { animation: shake 0.4s; border-color: var(--red); }
+  @keyframes shake {
+    10%,90% { transform: translateX(-2px); } 20%,80% { transform: translateX(4px); }
+    30%,50%,70% { transform: translateX(-6px); } 40%,60% { transform: translateX(6px); }
+  }
+  .lock-error { color: var(--red); font-size: 12px; margin-top: 10px; min-height: 14px; }
+  .lock-btn { margin-top: 14px; width: 100%; }
+  .lock-note { color: var(--text-muted); font-size: 11px; margin-top: 18px; line-height: 1.6; }
 
   .header {
     margin-bottom: 32px;
@@ -72,7 +101,7 @@
   .live-sep { width: 1px; height: 28px; background: var(--border); }
   .live-status { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; margin-left: auto; }
 
-  /* 手動編輯區 */
+  /* 編輯區共用 */
   .edit-card {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -110,7 +139,7 @@
     transition: border-color 0.2s;
   }
   .edit-field input:focus { border-color: var(--accent); }
-  .edit-actions { display: flex; gap: 10px; margin-top: 16px; }
+  .edit-actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
   .btn {
     padding: 10px 20px; border-radius: 8px; border: none;
     font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 600;
@@ -119,7 +148,38 @@
   .btn:hover { opacity: 0.85; }
   .btn-primary { background: var(--accent); color: #fff; }
   .btn-ghost { background: var(--surface2); color: var(--text-dim); border: 1px solid var(--border); }
+  .btn-sm { padding: 8px 14px; font-size: 12px; }
   .save-msg { font-size: 12px; color: var(--green); margin-top: 8px; display: none; }
+
+  /* 持股清單編輯 */
+  .holdings-scroll { overflow-x: auto; margin-bottom: 12px; }
+  .holdings-table { display: flex; flex-direction: column; min-width: 520px; }
+  .holdings-row { display: grid; grid-template-columns: 2fr 1fr 1fr 64px 28px; gap: 8px; align-items: center; padding: 6px 0; }
+  .holdings-head { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 6px; }
+  .holdings-row input[type=text], .holdings-row input[type=number], .holdings-row select {
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text);
+    font-size: 13px; padding: 8px 10px; outline: none; width: 100%; font-family: 'Inter', sans-serif;
+  }
+  .holdings-row input:focus, .holdings-row select:focus { border-color: var(--accent); }
+  .holdings-pct { font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 600; color: var(--accent); text-align: right; }
+  .holdings-del { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 15px; padding: 4px; line-height: 1; }
+  .holdings-del:hover { color: var(--red); }
+  .holdings-total { text-align: right; font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 600; margin-top: 4px; padding-top: 14px; border-top: 1px solid var(--border); }
+
+  .loan-edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media(max-width:680px){ .loan-edit-grid{grid-template-columns:1fr} }
+  .loan-edit-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+  .loan-edit-name {
+    width: 100%; background: transparent; border: none; color: var(--text);
+    font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 600;
+    margin-bottom: 12px; padding: 4px 0 8px; border-bottom: 1px solid var(--border); outline: none;
+  }
+
+  .milestone-edit-row { display: grid; grid-template-columns: 1fr 2fr 28px; gap: 8px; margin-bottom: 8px; }
+  .milestone-edit-row input {
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text);
+    font-size: 13px; padding: 8px 10px; outline: none; width: 100%;
+  }
 
   /* Hero 進度 */
   .hero {
@@ -182,7 +242,7 @@
   .milestone-row-info { flex: 1; }
   .milestone-name { font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 500; }
   .milestone-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-  .milestone-tag { font-size: 11px; padding: 3px 10px; border-radius: 99px; font-family: 'Space Grotesk', sans-serif; font-weight: 500; }
+  .milestone-tag { font-size: 11px; padding: 3px 10px; border-radius: 99px; font-family: 'Space Grotesk', sans-serif; font-weight: 500; flex-shrink:0; }
   .milestone-tag.done { background: rgba(52,211,153,0.12); color: var(--green); }
   .milestone-tag.pending { background: rgba(79,142,247,0.1); color: var(--accent); }
 
@@ -195,19 +255,34 @@
   .loan-detail { font-size: 12px; color: var(--text-muted); line-height: 1.8; }
 
   .footer { text-align: center; color: var(--text-muted); font-size: 12px; margin-top: 32px; }
+  .footer a { color: var(--text-muted); }
   .spinner { display: inline-block; width: 10px; height: 10px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
-<div class="container">
+
+<!-- 鎖定畫面：資料只會在密碼正確後才從 localStorage 讀出並渲染 -->
+<div class="lock-screen" id="lockScreen">
+  <div class="lock-card">
+    <div class="lock-icon">🔒</div>
+    <div class="lock-title">財富自由儀表板</div>
+    <div class="lock-sub">請輸入密碼以檢視資產資料</div>
+    <input type="password" id="lockInput" class="lock-input" placeholder="••••••" autocomplete="current-password">
+    <div class="lock-error" id="lockError"></div>
+    <button class="btn btn-primary lock-btn" onclick="tryUnlock()">解鎖</button>
+    <div class="lock-note">資料僅儲存在此瀏覽器的 localStorage，未經同步。</div>
+  </div>
+</div>
+
+<div class="container dashboard-hidden" id="dashboardRoot">
 
   <!-- Header -->
   <div class="header">
     <div>
       <div class="header-label">Personal Finance Dashboard</div>
       <div class="header-title">Josh · 財富自由追蹤</div>
-      <div class="header-sub">目標 3,000萬 · 45歲退休計畫</div>
+      <div class="header-sub" id="header-goal-sub">目標追蹤</div>
     </div>
     <div style="font-size:12px;color:var(--text-muted)" id="lastUpdate">—</div>
   </div>
@@ -256,55 +331,66 @@
     </div>
   </div>
 
-  <!-- 手動編輯區 -->
+  <!-- 資產持股編輯 -->
   <div class="edit-card">
-    <div class="edit-title">
-      <span>✏️</span> 手動更新資產數據
+    <div class="edit-title"><span>💰</span> 資產持股（自動加總＋佔比計算）</div>
+    <div class="holdings-scroll">
+      <div class="holdings-table" id="holdingsTable"></div>
     </div>
-    <div class="edit-grid">
-      <div class="edit-field">
-        <label>總資產 (NT$)</label>
-        <input type="number" id="inp-total" placeholder="14854278">
-      </div>
-      <div class="edit-field">
-        <label>美股總值 (NT$)</label>
-        <input type="number" id="inp-us" placeholder="7373463">
-      </div>
-      <div class="edit-field">
-        <label>台股總值 (NT$)</label>
-        <input type="number" id="inp-tw" placeholder="7859752">
-      </div>
-      <div class="edit-field">
-        <label>現金/其他 (NT$)</label>
-        <input type="number" id="inp-cash" placeholder="621063">
-      </div>
-      <div class="edit-field">
-        <label>信貸一剩餘期數</label>
-        <input type="number" id="inp-loan1m" placeholder="52">
-      </div>
-      <div class="edit-field">
-        <label>信貸二剩餘期數</label>
-        <input type="number" id="inp-loan2m" placeholder="84">
-      </div>
-    </div>
-    <div class="edit-actions">
-      <button class="btn btn-primary" onclick="saveData()">儲存並更新</button>
-      <button class="btn btn-ghost" onclick="resetData()">重設為預設值</button>
-    </div>
-    <div class="save-msg" id="save-msg">✓ 已儲存，儀表板已更新</div>
+    <button class="btn btn-ghost btn-sm" onclick="addHolding()">+ 新增一筆</button>
+    <div class="holdings-total">總資產：<span id="holdingsTotalDisplay">NT$ 0</span></div>
   </div>
 
+  <!-- 負債編輯 -->
+  <div class="edit-card">
+    <div class="edit-title"><span>🏦</span> 負債（信貸）</div>
+    <div class="loan-edit-grid" id="loanEditGrid"></div>
+  </div>
+
+  <!-- 里程碑編輯 -->
+  <div class="edit-card">
+    <div class="edit-title"><span>🚩</span> 資產里程碑</div>
+    <div id="milestoneEditList"></div>
+    <button class="btn btn-ghost btn-sm" onclick="addMilestone()">+ 新增里程碑</button>
+  </div>
+
+  <!-- 個人設定 -->
+  <div class="edit-card">
+    <div class="edit-title"><span>⚙️</span> 個人設定</div>
+    <div class="edit-grid">
+      <div class="edit-field">
+        <label>目標金額 (NT$)</label>
+        <input type="number" id="set-goal" placeholder="30000000">
+      </div>
+      <div class="edit-field">
+        <label>出生年（西元）</label>
+        <input type="number" id="set-birthYear" placeholder="例如 1987">
+      </div>
+      <div class="edit-field">
+        <label>目標退休年齡</label>
+        <input type="number" id="set-targetAge" placeholder="例如 45">
+      </div>
+    </div>
+  </div>
+
+  <div class="edit-actions">
+    <button class="btn btn-primary" onclick="saveAll()">儲存並更新</button>
+    <button class="btn btn-ghost" onclick="resetAll()">重設為預設值</button>
+    <button class="btn btn-ghost" onclick="lockDashboard()">🔒 登出鎖定</button>
+  </div>
+  <div class="save-msg" id="save-msg">✓ 已儲存，儀表板已更新</div>
+
   <!-- Hero 進度 -->
-  <div class="hero">
+  <div class="hero" style="margin-top:20px">
     <div class="hero-top">
       <div>
         <div class="hero-label">目前總資產</div>
-        <div class="hero-amount" id="display-total">NT$ 1,485萬</div>
+        <div class="hero-amount" id="display-total">NT$ 0</div>
       </div>
       <div style="text-align:right">
         <div class="hero-label">目標</div>
-        <div class="hero-target-num">NT$ 3,000萬</div>
-        <div style="margin-top:4px"><span class="progress-pct" id="pctDisplay">49.5%</span></div>
+        <div class="hero-target-num" id="display-goal">NT$ 0</div>
+        <div style="margin-top:4px"><span class="progress-pct" id="pctDisplay">0.0%</span></div>
       </div>
     </div>
     <div>
@@ -313,8 +399,8 @@
       </div>
       <div class="progress-meta">
         <span>NT$ 0</span>
-        <span>還差 <strong style="color:var(--text)" id="display-gap">NT$ 1,515萬</strong></span>
-        <span>NT$ 3,000萬</span>
+        <span>還差 <strong style="color:var(--text)" id="display-gap">NT$ 0</strong></span>
+        <span id="display-goal-meta">NT$ 0</span>
       </div>
     </div>
   </div>
@@ -323,22 +409,22 @@
   <div class="kpi-grid">
     <div class="kpi">
       <div class="kpi-label">年齡</div>
-      <div class="kpi-value">39 歲</div>
-      <div class="kpi-sub">目標 45 歲退休</div>
+      <div class="kpi-value" id="kpi-age">—</div>
+      <div class="kpi-sub" id="kpi-age-sub">請於下方設定出生年與目標年齡</div>
     </div>
     <div class="kpi">
       <div class="kpi-label">倒數時間</div>
-      <div class="kpi-value gold">6 年</div>
-      <div class="kpi-sub">約 72 個月</div>
+      <div class="kpi-value gold" id="kpi-countdown">—</div>
+      <div class="kpi-sub" id="kpi-countdown-sub">—</div>
     </div>
     <div class="kpi">
       <div class="kpi-label">每年須增幅</div>
-      <div class="kpi-value green" id="display-annual">約 253萬</div>
+      <div class="kpi-value green" id="display-annual">—</div>
       <div class="kpi-sub">含投資增值</div>
     </div>
     <div class="kpi">
-      <div class="kpi-label">2025 年報酬率</div>
-      <div class="kpi-value green">+50.97%</div>
+      <div class="kpi-label" id="kpi-return-label">年報酬率</div>
+      <div class="kpi-value green" id="kpi-return-value">—</div>
       <div class="kpi-sub">美股表現強勁</div>
     </div>
   </div>
@@ -350,7 +436,7 @@
       <div class="chart-wrap"><canvas id="allocChart"></canvas></div>
     </div>
     <div class="chart-card">
-      <div class="chart-title">台股 vs 美股</div>
+      <div class="chart-title">持股佔比明細（Top 8）</div>
       <div class="chart-wrap"><canvas id="splitChart"></canvas></div>
     </div>
   </div>
@@ -364,86 +450,26 @@
   <!-- 里程碑 -->
   <div class="milestone-card">
     <div class="milestone-title">資產里程碑</div>
-    <div class="milestones">
-      <div class="milestone-row">
-        <div class="milestone-dot done"></div>
-        <div class="milestone-row-info">
-          <div class="milestone-name">NT$ 330萬</div>
-          <div class="milestone-sub">2023年2月達成</div>
-        </div>
-        <span class="milestone-tag done">✓ 完成</span>
-      </div>
-      <div class="milestone-row">
-        <div class="milestone-dot done"></div>
-        <div class="milestone-row-info">
-          <div class="milestone-name">NT$ 500萬</div>
-          <div class="milestone-sub">2024年2月達成</div>
-        </div>
-        <span class="milestone-tag done">✓ 完成</span>
-      </div>
-      <div class="milestone-row">
-        <div class="milestone-dot done"></div>
-        <div class="milestone-row-info">
-          <div class="milestone-name">NT$ 1,485萬（現況）</div>
-          <div class="milestone-sub">2026年8月</div>
-        </div>
-        <span class="milestone-tag done">✓ 目前</span>
-      </div>
-      <div class="milestone-row">
-        <div class="milestone-dot pending"></div>
-        <div class="milestone-row-info">
-          <div class="milestone-name">NT$ 2,000萬</div>
-          <div class="milestone-sub">預估 2027–2028 年</div>
-        </div>
-        <span class="milestone-tag pending">進行中</span>
-      </div>
-      <div class="milestone-row">
-        <div class="milestone-dot pending"></div>
-        <div class="milestone-row-info">
-          <div class="milestone-name">NT$ 3,000萬 🎯</div>
-          <div class="milestone-sub">目標 2031年（45歲）</div>
-        </div>
-        <span class="milestone-tag pending">目標</span>
-      </div>
-    </div>
+    <div class="milestones" id="milestonesDisplay"></div>
   </div>
 
   <!-- 負債 -->
-  <div class="loan-grid">
-    <div class="loan-card">
-      <div class="loan-name">信貸第一筆</div>
-      <div class="loan-amount">NT$ 199萬</div>
-      <div class="loan-detail">
-        月繳 $35,000 · 5年期<br>
-        剩餘 <span id="display-loan1m">52</span> 期<br>
-        利率 ~3.5%
-      </div>
-    </div>
-    <div class="loan-card">
-      <div class="loan-name">信貸第二筆</div>
-      <div class="loan-amount">NT$ 383萬</div>
-      <div class="loan-detail">
-        月繳 $48,000 · 7年期<br>
-        剩餘 <span id="display-loan2m">84</span> 期<br>
-        利率 3.5%
-      </div>
-    </div>
-  </div>
+  <div class="loan-grid" id="loanDisplayGrid"></div>
 
   <div class="kpi-grid" style="margin-bottom:24px">
     <div class="kpi">
       <div class="kpi-label">負債總額</div>
-      <div class="kpi-value red">NT$ 582萬</div>
+      <div class="kpi-value red" id="display-loanTotal">NT$ 0</div>
       <div class="kpi-sub">兩筆信貸合計</div>
     </div>
     <div class="kpi">
       <div class="kpi-label">月還款合計</div>
-      <div class="kpi-value red">NT$ 83,000</div>
-      <div class="kpi-sub">佔月薪約 50%</div>
+      <div class="kpi-value red" id="display-monthlyTotal">NT$ 0</div>
+      <div class="kpi-sub" id="display-monthlyPct">佔月薪比例未設定</div>
     </div>
     <div class="kpi">
       <div class="kpi-label">淨資產</div>
-      <div class="kpi-value green" id="display-net">NT$ 903萬</div>
+      <div class="kpi-value green" id="display-net">NT$ 0</div>
       <div class="kpi-sub">總資產 - 負債</div>
     </div>
     <div class="kpi">
@@ -457,52 +483,260 @@
 </div>
 
 <script>
-// ── 預設資料 ──
-const DEFAULTS = {
-  total: 14854278,
-  us: 7373463,
-  tw: 7859752,
-  cash: 621063,
-  loan1m: 52,
-  loan2m: 84,
-};
-const GOAL = 30000000;
-const LOAN_TOTAL = 5820000;
+// ────────────────────────────────────────────────────────────
+// 密碼保護
+// PASSWORD_HASH 是密碼的 SHA-256 雜湊值，不是明文密碼，可以放心 commit 到 public repo。
+// 換密碼方法：開啟這個頁面 → 按 F12 開主控台 → 貼上執行：
+//   await __hashPassword('你的新密碼')
+// 把印出來的雜湊字串貼到下面 PASSWORD_HASH 常數，存檔後 push 上去即可。
+// 目前預設密碼是「change-me-now」，部署前請務必更換！
+// ────────────────────────────────────────────────────────────
+const PASSWORD_HASH = 'ccc0b903bce51fb554262d742d0a282e1f8a87d064f1cf44f8ff5148ca4beb42';
+const AUTH_KEY = 'joshDashboardAuth';
+const AUTH_TTL_DAYS = 30;
 
-// ── localStorage 讀寫 ──
-function loadData() {
+window.__hashPassword = async (pw) => {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw));
+  const hex = [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+  console.log('雜湊值（複製到 PASSWORD_HASH）:', hex);
+  return hex;
+};
+
+function isAuthed() {
   try {
-    const saved = localStorage.getItem('joshDashboard');
-    return saved ? JSON.parse(saved) : { ...DEFAULTS };
-  } catch(e) { return { ...DEFAULTS }; }
+    const raw = localStorage.getItem(AUTH_KEY);
+    if (!raw) return false;
+    const { expiresAt } = JSON.parse(raw);
+    return Date.now() < expiresAt;
+  } catch (e) { return false; }
 }
-function saveData() {
-  const d = {
-    total: parseFloat(document.getElementById('inp-total').value) || state.total,
-    us:    parseFloat(document.getElementById('inp-us').value)    || state.us,
-    tw:    parseFloat(document.getElementById('inp-tw').value)    || state.tw,
-    cash:  parseFloat(document.getElementById('inp-cash').value)  || state.cash,
-    loan1m: parseInt(document.getElementById('inp-loan1m').value) || state.loan1m,
-    loan2m: parseInt(document.getElementById('inp-loan2m').value) || state.loan2m,
-    savedAt: new Date().toLocaleString('zh-TW'),
-  };
-  localStorage.setItem('joshDashboard', JSON.stringify(d));
-  Object.assign(state, d);
+function setAuthed() {
+  const expiresAt = Date.now() + AUTH_TTL_DAYS * 24 * 60 * 60 * 1000;
+  localStorage.setItem(AUTH_KEY, JSON.stringify({ expiresAt }));
+}
+function lockDashboard() {
+  localStorage.removeItem(AUTH_KEY);
+  location.reload();
+}
+async function tryUnlock() {
+  const input = document.getElementById('lockInput');
+  const hash = await __hashPassword(input.value);
+  if (hash === PASSWORD_HASH) {
+    setAuthed();
+    showDashboard();
+  } else {
+    const errEl = document.getElementById('lockError');
+    errEl.textContent = '密碼錯誤，請再試一次';
+    input.classList.add('shake');
+    input.value = '';
+    setTimeout(() => input.classList.remove('shake'), 400);
+  }
+}
+function showDashboard() {
+  document.getElementById('lockScreen').style.display = 'none';
+  document.getElementById('dashboardRoot').classList.remove('dashboard-hidden');
+  bootDashboard();
+}
+
+// ────────────────────────────────────────────────────────────
+// 資料模型
+// ────────────────────────────────────────────────────────────
+function uid() { return 'h' + Math.random().toString(36).slice(2, 9); }
+function escapeHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+
+const DEFAULT_STATE = {
+  holdings: [
+    { id: 'h-us', name: '美股帳戶', category: 'us', amount: 0 },
+    { id: 'h-tw', name: '台股帳戶', category: 'tw', amount: 0 },
+    { id: 'h-cash', name: '現金/其他', category: 'cash', amount: 0 },
+  ],
+  loans: [
+    { id: 'loan1', name: '信貸第一筆', principal: 0, monthlyPayment: 0, termMonths: 60, remainingMonths: 0, rate: 0 },
+    { id: 'loan2', name: '信貸第二筆', principal: 0, monthlyPayment: 0, termMonths: 84, remainingMonths: 0, rate: 0 },
+  ],
+  milestones: [],
+  goal: 30000000,
+  birthYear: null,
+  targetAge: null,
+  monthlyIncome: null,
+  savedAt: null,
+};
+const CATEGORY_LABELS = { us: '美股', tw: '台股', cash: '現金/其他' };
+const CATEGORY_COLORS = { us: '#4f8ef7', tw: '#7c6cf7', cash: '#2dd4bf' };
+
+const STATE_KEY = 'joshDashboardV2';
+const OLD_KEY = 'joshDashboard';
+
+function cloneDefault() { return JSON.parse(JSON.stringify(DEFAULT_STATE)); }
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STATE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return { ...cloneDefault(), ...parsed };
+    }
+    const oldRaw = localStorage.getItem(OLD_KEY);
+    if (oldRaw) {
+      const old = JSON.parse(oldRaw);
+      const migrated = cloneDefault();
+      migrated.holdings = [
+        { id: uid(), name: '美股帳戶', category: 'us', amount: old.us || 0 },
+        { id: uid(), name: '台股帳戶', category: 'tw', amount: old.tw || 0 },
+        { id: uid(), name: '現金/其他', category: 'cash', amount: old.cash || 0 },
+      ];
+      if (old.loan1m) migrated.loans[0].remainingMonths = old.loan1m;
+      if (old.loan2m) migrated.loans[1].remainingMonths = old.loan2m;
+      migrated.savedAt = old.savedAt || null;
+      localStorage.setItem(STATE_KEY, JSON.stringify(migrated));
+      return migrated;
+    }
+  } catch (e) { console.warn('loadState failed', e); }
+  return cloneDefault();
+}
+function persistState() { localStorage.setItem(STATE_KEY, JSON.stringify(state)); }
+
+function computeTotals(s) {
+  const totals = { total: 0, us: 0, tw: 0, cash: 0 };
+  s.holdings.forEach(h => {
+    const amt = parseFloat(h.amount) || 0;
+    totals.total += amt;
+    if (totals[h.category] !== undefined) totals[h.category] += amt;
+  });
+  return totals;
+}
+
+let state = loadState();
+let editingHoldings = [];
+let editingLoans = [];
+let editingMilestones = [];
+
+function cloneEditingFromState() {
+  editingHoldings = state.holdings.map(h => ({ ...h }));
+  editingLoans = state.loans.map(l => ({ ...l }));
+  editingMilestones = state.milestones.map(m => ({ ...m }));
+}
+
+// ── 持股清單編輯 ──
+function renderHoldingsEditor() {
+  const wrap = document.getElementById('holdingsTable');
+  const total = editingHoldings.reduce((s, h) => s + (parseFloat(h.amount) || 0), 0);
+  const rows = editingHoldings.map((h, idx) => {
+    const amt = parseFloat(h.amount) || 0;
+    const pct = total > 0 ? (amt / total * 100).toFixed(1) : '0.0';
+    return `<div class="holdings-row">
+      <input type="text" value="${escapeHtml(h.name)}" placeholder="例如：復委託美股" oninput="updateHolding(${idx},'name',this.value)">
+      <select onchange="updateHolding(${idx},'category',this.value)">
+        <option value="us" ${h.category === 'us' ? 'selected' : ''}>美股</option>
+        <option value="tw" ${h.category === 'tw' ? 'selected' : ''}>台股</option>
+        <option value="cash" ${h.category === 'cash' ? 'selected' : ''}>現金/其他</option>
+      </select>
+      <input type="number" value="${h.amount}" placeholder="0" oninput="updateHolding(${idx},'amount',this.value)">
+      <div class="holdings-pct">${pct}%</div>
+      <button class="holdings-del" onclick="removeHolding(${idx})" title="刪除">✕</button>
+    </div>`;
+  }).join('');
+  wrap.innerHTML = `<div class="holdings-row holdings-head"><div>名稱</div><div>分類</div><div>金額 (NT$)</div><div style="text-align:right">佔比</div><div></div></div>${rows}`;
+  document.getElementById('holdingsTotalDisplay').textContent = fmt(total);
+}
+function updateHolding(idx, key, value) {
+  editingHoldings[idx][key] = value;
+  // 金額變動時只更新佔比數字跟總計，不要整個表格重繪，
+  // 不然使用者打字打到一半 input 會失焦、每次只能打一個字。
+  if (key === 'amount') updateHoldingsPercentagesLive();
+}
+function updateHoldingsPercentagesLive() {
+  const total = editingHoldings.reduce((s, h) => s + (parseFloat(h.amount) || 0), 0);
+  const pctEls = document.querySelectorAll('#holdingsTable .holdings-pct');
+  editingHoldings.forEach((h, idx) => {
+    const amt = parseFloat(h.amount) || 0;
+    const pct = total > 0 ? (amt / total * 100).toFixed(1) : '0.0';
+    if (pctEls[idx]) pctEls[idx].textContent = pct + '%';
+  });
+  document.getElementById('holdingsTotalDisplay').textContent = fmt(total);
+}
+function addHolding() { editingHoldings.push({ id: uid(), name: '', category: 'us', amount: 0 }); renderHoldingsEditor(); }
+function removeHolding(idx) { editingHoldings.splice(idx, 1); renderHoldingsEditor(); }
+
+// ── 負債編輯 ──
+function renderLoanEditor() {
+  const wrap = document.getElementById('loanEditGrid');
+  wrap.innerHTML = editingLoans.map((l, idx) => `
+    <div class="loan-edit-card">
+      <input type="text" class="loan-edit-name" value="${escapeHtml(l.name)}" oninput="updateLoan(${idx},'name',this.value)">
+      <div class="edit-grid" style="grid-template-columns:repeat(2,1fr)">
+        <div class="edit-field"><label>本金 (NT$)</label><input type="number" value="${l.principal}" oninput="updateLoan(${idx},'principal',this.value)"></div>
+        <div class="edit-field"><label>月付金 (NT$)</label><input type="number" value="${l.monthlyPayment}" oninput="updateLoan(${idx},'monthlyPayment',this.value)"></div>
+        <div class="edit-field"><label>總期數</label><input type="number" value="${l.termMonths}" oninput="updateLoan(${idx},'termMonths',this.value)"></div>
+        <div class="edit-field"><label>剩餘期數</label><input type="number" value="${l.remainingMonths}" oninput="updateLoan(${idx},'remainingMonths',this.value)"></div>
+        <div class="edit-field"><label>利率 (%)</label><input type="number" step="0.01" value="${l.rate}" oninput="updateLoan(${idx},'rate',this.value)"></div>
+      </div>
+    </div>`).join('');
+}
+function updateLoan(idx, key, value) { editingLoans[idx][key] = value; }
+
+// ── 里程碑編輯 ──
+function renderMilestoneEditor() {
+  const wrap = document.getElementById('milestoneEditList');
+  wrap.innerHTML = editingMilestones.map((m, idx) => `
+    <div class="milestone-edit-row">
+      <input type="number" value="${m.amount}" placeholder="金額 NT$" oninput="updateMilestone(${idx},'amount',this.value)">
+      <input type="text" value="${escapeHtml(m.label)}" placeholder="日期/備註，例如 2023年2月" oninput="updateMilestone(${idx},'label',this.value)">
+      <button class="holdings-del" onclick="removeMilestone(${idx})" title="刪除">✕</button>
+    </div>`).join('') || '<div style="font-size:12px;color:var(--text-muted)">尚無里程碑，點下方按鈕新增（例如：第一次達成 300 萬的日期）</div>';
+}
+function updateMilestone(idx, key, value) { editingMilestones[idx][key] = value; }
+function addMilestone() { editingMilestones.push({ amount: 0, label: '' }); renderMilestoneEditor(); }
+function removeMilestone(idx) { editingMilestones.splice(idx, 1); renderMilestoneEditor(); }
+
+// ── 儲存 / 重設 ──
+function saveAll() {
+  state.holdings = editingHoldings.map(h => ({
+    id: h.id || uid(), name: h.name || '未命名', category: h.category || 'cash', amount: parseFloat(h.amount) || 0,
+  }));
+  state.loans = editingLoans.map(l => ({
+    ...l,
+    principal: parseFloat(l.principal) || 0,
+    monthlyPayment: parseFloat(l.monthlyPayment) || 0,
+    termMonths: parseInt(l.termMonths) || 0,
+    remainingMonths: parseInt(l.remainingMonths) || 0,
+    rate: parseFloat(l.rate) || 0,
+  }));
+  state.milestones = editingMilestones
+    .map(m => ({ amount: parseFloat(m.amount) || 0, label: m.label || '' }))
+    .filter(m => m.amount > 0);
+  const goalVal = parseFloat(document.getElementById('set-goal').value);
+  const byVal = parseInt(document.getElementById('set-birthYear').value);
+  const taVal = parseInt(document.getElementById('set-targetAge').value);
+  if (!isNaN(goalVal) && goalVal > 0) state.goal = goalVal;
+  state.birthYear = !isNaN(byVal) ? byVal : state.birthYear;
+  state.targetAge = !isNaN(taVal) ? taVal : state.targetAge;
+  state.savedAt = new Date().toLocaleString('zh-TW');
+
+  persistState();
   renderDashboard();
   const msg = document.getElementById('save-msg');
   msg.style.display = 'block';
-  setTimeout(() => msg.style.display = 'none', 3000);
+  setTimeout(() => { msg.style.display = 'none'; }, 3000);
 }
-function resetData() {
-  localStorage.removeItem('joshDashboard');
-  Object.assign(state, DEFAULTS);
-  ['total','us','tw','cash','loan1m','loan2m'].forEach(k => {
-    document.getElementById('inp-'+k).value = '';
-  });
+function resetAll() {
+  if (!confirm('確定要清空所有資料並重設為預設值嗎？此動作無法復原。')) return;
+  localStorage.removeItem(STATE_KEY);
+  state = cloneDefault();
+  cloneEditingFromState();
+  renderHoldingsEditor();
+  renderLoanEditor();
+  renderMilestoneEditor();
+  fillSettingsInputs();
   renderDashboard();
 }
-
-let state = loadData();
+function fillSettingsInputs() {
+  document.getElementById('set-goal').value = state.goal || '';
+  document.getElementById('set-birthYear').value = state.birthYear || '';
+  document.getElementById('set-targetAge').value = state.targetAge || '';
+}
 
 // ── 圖表 ──
 let allocChart, splitChart;
@@ -513,67 +747,152 @@ function initCharts() {
     titleColor: '#e8eaf0', bodyColor: '#9ca3af', padding: 10,
   };
   const legendLabels = { color: '#9ca3af', font: { family: 'Inter', size: 12 }, boxWidth: 12, padding: 14 };
+  const totals = computeTotals(state);
 
   allocChart = new Chart(document.getElementById('allocChart').getContext('2d'), {
     type: 'doughnut',
     data: {
       labels: ['美股', '台股', '現金/其他'],
-      datasets: [{ data: [state.us, state.tw, state.cash],
-        backgroundColor: ['#4f8ef7','#7c6cf7','#2dd4bf'],
-        borderColor: '#141720', borderWidth: 3, hoverOffset: 6 }]
+      datasets: [{ data: [totals.us, totals.tw, totals.cash],
+        backgroundColor: ['#4f8ef7', '#7c6cf7', '#2dd4bf'],
+        borderColor: '#141720', borderWidth: 3, hoverOffset: 6 }],
     },
     options: {
       responsive: true, maintainAspectRatio: false, cutout: '68%',
       plugins: { legend: { labels: legendLabels }, tooltip: { ...tooltip,
-        callbacks: { label: ctx => ` NT$ ${(ctx.parsed/10000).toFixed(0)}萬 (${((ctx.parsed/state.total)*100).toFixed(1)}%)` }
-      }}
-    }
+        callbacks: { label: ctx => {
+          const t = computeTotals(state).total;
+          const pct = t > 0 ? (ctx.parsed / t * 100).toFixed(1) : '0.0';
+          return ` NT$ ${(ctx.parsed / 10000).toFixed(0)}萬 (${pct}%)`;
+        } },
+      } },
+    },
   });
 
   splitChart = new Chart(document.getElementById('splitChart').getContext('2d'), {
     type: 'bar',
-    data: {
-      labels: ['美股', '台股', '現金'],
-      datasets: [{ data: [state.us, state.tw, state.cash],
-        backgroundColor: ['#4f8ef7','#7c6cf7','#2dd4bf'],
-        borderRadius: 6, borderSkipped: false }]
-    },
+    data: { labels: [], datasets: [{ data: [], backgroundColor: [], borderRadius: 6, borderSkipped: false }] },
     options: {
       responsive: true, maintainAspectRatio: false, indexAxis: 'y',
       plugins: { legend: { display: false }, tooltip: { ...tooltip,
-        callbacks: { label: ctx => ` NT$ ${(ctx.parsed.x/10000).toFixed(0)}萬` }
-      }},
+        callbacks: { label: ctx => {
+          const t = computeTotals(state).total;
+          const pct = t > 0 ? (ctx.parsed.x / t * 100).toFixed(1) : '0.0';
+          return ` NT$ ${(ctx.parsed.x / 10000).toFixed(0)}萬 (${pct}%)`;
+        } },
+      } },
       scales: {
-        x: { ticks: { color:'#6b7280', callback: v=>`${(v/10000).toFixed(0)}萬`, font:{size:11} }, grid:{color:'#1e2235'} },
-        y: { ticks: { color:'#9ca3af', font:{size:12} }, grid:{display:false} }
-      }
-    }
+        x: { ticks: { color: '#6b7280', callback: v => `${(v / 10000).toFixed(0)}萬`, font: { size: 11 } }, grid: { color: '#1e2235' } },
+        y: { ticks: { color: '#9ca3af', font: { size: 12 } }, grid: { display: false } },
+      },
+    },
   });
 }
 
 function updateCharts() {
-  allocChart.data.datasets[0].data = [state.us, state.tw, state.cash];
-  splitChart.data.datasets[0].data = [state.us, state.tw, state.cash];
-  allocChart.update(); splitChart.update();
+  const totals = computeTotals(state);
+  allocChart.data.datasets[0].data = [totals.us, totals.tw, totals.cash];
+  allocChart.update();
+
+  const sorted = [...state.holdings].filter(h => (parseFloat(h.amount) || 0) > 0)
+    .sort((a, b) => b.amount - a.amount).slice(0, 8);
+  splitChart.data.labels = sorted.map(h => h.name || '未命名');
+  splitChart.data.datasets[0].data = sorted.map(h => h.amount);
+  splitChart.data.datasets[0].backgroundColor = sorted.map(h => CATEGORY_COLORS[h.category] || '#6b7280');
+  splitChart.update();
 }
 
 // ── 儀表板渲染 ──
-function fmt(n) { return 'NT$ ' + (n/10000).toFixed(0) + '萬'; }
+function fmt(n) { return 'NT$ ' + (Math.round(n || 0) / 10000).toFixed(0) + '萬'; }
+
+function renderLoanDisplay() {
+  const wrap = document.getElementById('loanDisplayGrid');
+  wrap.innerHTML = state.loans.map(l => `
+    <div class="loan-card">
+      <div class="loan-name">${escapeHtml(l.name)}</div>
+      <div class="loan-amount">${fmt(l.principal)}</div>
+      <div class="loan-detail">
+        月繳 $${Number(l.monthlyPayment || 0).toLocaleString()} · ${l.termMonths || 0}期<br>
+        剩餘 ${l.remainingMonths || 0} 期<br>
+        利率 ~${l.rate || 0}%
+      </div>
+    </div>`).join('');
+}
+
+function renderMilestoneDisplay(total) {
+  const wrap = document.getElementById('milestonesDisplay');
+  const items = state.milestones.map(m => ({ amount: m.amount, label: m.label, kind: 'past' }));
+  items.push({ amount: total, label: new Date().toLocaleDateString('zh-TW', { year: 'numeric', month: 'long' }), kind: 'current' });
+  if (state.goal) items.push({ amount: state.goal, label: '目標', kind: 'goal' });
+  items.sort((a, b) => a.amount - b.amount);
+
+  wrap.innerHTML = items.map(m => {
+    const done = m.kind === 'current' || (m.kind === 'past' && total >= m.amount);
+    const tagText = m.kind === 'current' ? '✓ 目前' : (m.kind === 'goal' ? '目標' : (done ? '✓ 完成' : '進行中'));
+    const dotClass = (m.kind !== 'goal' && (done || m.kind === 'current')) ? 'done' : 'pending';
+    const tagClass = (m.kind === 'goal') ? 'pending' : (done ? 'done' : 'pending');
+    const nameText = m.kind === 'goal' ? `${fmt(m.amount)} 🎯` : (m.kind === 'current' ? `${fmt(m.amount)}（現況）` : fmt(m.amount));
+    return `<div class="milestone-row">
+      <div class="milestone-dot ${dotClass}"></div>
+      <div class="milestone-row-info">
+        <div class="milestone-name">${nameText}</div>
+        <div class="milestone-sub">${escapeHtml(m.label || '')}</div>
+      </div>
+      <span class="milestone-tag ${tagClass}">${tagText}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderAgeKpis(gap) {
+  const currentYear = new Date().getFullYear();
+  const ageEl = document.getElementById('kpi-age');
+  const ageSubEl = document.getElementById('kpi-age-sub');
+  const cdEl = document.getElementById('kpi-countdown');
+  const cdSubEl = document.getElementById('kpi-countdown-sub');
+  const annualEl = document.getElementById('display-annual');
+
+  if (state.birthYear && state.targetAge) {
+    const age = currentYear - state.birthYear;
+    const yearsLeft = Math.max(state.targetAge - age, 0);
+    ageEl.textContent = age + ' 歲';
+    ageSubEl.textContent = `目標 ${state.targetAge} 歲退休`;
+    cdEl.textContent = yearsLeft + ' 年';
+    cdSubEl.textContent = `約 ${yearsLeft * 12} 個月`;
+    annualEl.textContent = yearsLeft > 0 ? '約 ' + (gap / yearsLeft / 10000).toFixed(0) + '萬' : (gap <= 0 ? '已達成 🎉' : '—');
+  } else {
+    ageEl.textContent = '—';
+    ageSubEl.textContent = '請於下方「個人設定」填入出生年與目標退休年齡';
+    cdEl.textContent = '—';
+    cdSubEl.textContent = '—';
+    annualEl.textContent = '—';
+  }
+}
 
 function renderDashboard() {
-  const pct = (state.total / GOAL) * 100;
-  const gap = GOAL - state.total;
-  const net = state.total - LOAN_TOTAL;
-  const annual = gap / 6;
+  const totals = computeTotals(state);
+  const total = totals.total;
+  const gap = state.goal - total;
+  const loanTotal = state.loans.reduce((s, l) => s + (parseFloat(l.principal) || 0), 0);
+  const monthlyTotal = state.loans.reduce((s, l) => s + (parseFloat(l.monthlyPayment) || 0), 0);
+  const net = total - loanTotal;
+  const pct = state.goal > 0 ? (total / state.goal) * 100 : 0;
 
-  document.getElementById('display-total').textContent = fmt(state.total);
+  document.getElementById('display-total').textContent = fmt(total);
+  document.getElementById('display-goal').textContent = fmt(state.goal);
+  document.getElementById('display-goal-meta').textContent = fmt(state.goal);
+  document.getElementById('header-goal-sub').textContent = `目標 ${fmt(state.goal)}` + (state.targetAge ? ` · ${state.targetAge}歲退休計畫` : '');
   document.getElementById('pctDisplay').textContent = pct.toFixed(1) + '%';
-  document.getElementById('progressBar').style.width = Math.min(pct, 100) + '%';
-  document.getElementById('display-gap').textContent = fmt(gap);
-  document.getElementById('display-annual').textContent = '約 ' + (annual/10000).toFixed(0) + '萬';
+  document.getElementById('progressBar').style.width = Math.min(Math.max(pct, 0), 100) + '%';
+  document.getElementById('display-gap').textContent = gap > 0 ? fmt(gap) : '已達成 🎉';
   document.getElementById('display-net').textContent = fmt(net);
-  document.getElementById('display-loan1m').textContent = state.loan1m;
-  document.getElementById('display-loan2m').textContent = state.loan2m;
+  document.getElementById('display-loanTotal').textContent = fmt(loanTotal);
+  document.getElementById('display-monthlyTotal').textContent = 'NT$ ' + Math.round(monthlyTotal).toLocaleString();
+  document.getElementById('display-monthlyPct').textContent = state.monthlyIncome
+    ? `佔月薪約 ${((monthlyTotal / state.monthlyIncome) * 100).toFixed(0)}%` : '兩筆信貸合計';
+
+  renderAgeKpis(gap);
+  renderLoanDisplay();
+  renderMilestoneDisplay(total);
 
   const now = new Date().toLocaleString('zh-TW');
   document.getElementById('lastUpdate').textContent = '更新：' + now;
@@ -583,14 +902,14 @@ function renderDashboard() {
 }
 
 // ── 年度績效 ──
+const perfData = [
+  { year: '2025', pct: 50.97, color: '#34d399' },
+  { year: '2024', pct: 46.95, color: '#34d399' },
+  { year: '2023', pct: 26.75, color: '#34d399' },
+  { year: '2022', pct: -10.69, color: '#f87171' },
+  { year: '2021', pct: 12.36, color: '#34d399' },
+];
 function renderPerf() {
-  const perfData = [
-    { year: '2025', pct: 50.97, color: '#34d399' },
-    { year: '2024', pct: 46.95, color: '#34d399' },
-    { year: '2023', pct: 26.75, color: '#34d399' },
-    { year: '2022', pct: -10.69, color: '#f87171' },
-    { year: '2021', pct: 12.36, color: '#34d399' },
-  ];
   const container = document.getElementById('perfBars');
   container.innerHTML = '';
   perfData.forEach(d => {
@@ -601,34 +920,90 @@ function renderPerf() {
         <div class="perf-bar-wrap">
           <div class="perf-bar" data-width="${bw}" style="background:${d.color};width:0%"></div>
         </div>
-        <div class="perf-pct" style="color:${d.color}">${d.pct>0?'+':''}${d.pct.toFixed(1)}%</div>
+        <div class="perf-pct" style="color:${d.color}">${d.pct > 0 ? '+' : ''}${d.pct.toFixed(1)}%</div>
       </div>`;
   });
   setTimeout(() => {
-    document.querySelectorAll('.perf-bar').forEach(b => b.style.width = b.dataset.width + '%');
+    document.querySelectorAll('.perf-bar').forEach(b => { b.style.width = b.dataset.width + '%'; });
   }, 400);
+
+  if (perfData.length) {
+    document.getElementById('kpi-return-label').textContent = perfData[0].year + ' 年報酬率';
+    const el = document.getElementById('kpi-return-value');
+    el.textContent = (perfData[0].pct > 0 ? '+' : '') + perfData[0].pct.toFixed(2) + '%';
+    el.className = 'kpi-value ' + (perfData[0].pct >= 0 ? 'green' : 'red');
+  }
 }
 
-// ── 即時股價（Yahoo Finance via allorigins proxy）──
-async function fetchQuote(symbol) {
-  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=1d`;
-  const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-  const res = await fetch(proxy);
+// ────────────────────────────────────────────────────────────
+// 即時股價：Cloudflare Worker（主要）→ corsproxy.io（備援1）→ allorigins（備援2）
+// 三個來源都失敗時，改顯示 localStorage 裡最後一次成功抓到的報價（並標示為快取）。
+// ────────────────────────────────────────────────────────────
+
+// 部署好自己的 Cloudflare Worker 之後，把網址換到這裡（結尾不要加斜線）。
+// 部署方式見 DEPLOY.md。
+const WORKER_BASE = 'https://YOUR-WORKER-SUBDOMAIN.workers.dev';
+
+const QUOTE_SYMBOLS = { tw50: '0050.TW', sp500: '^GSPC', qqq: 'QQQ', usd: 'TWD=X' };
+const QUOTE_CACHE_KEY = 'joshDashboardQuoteCache';
+
+function isWorkerConfigured() {
+  return WORKER_BASE && !WORKER_BASE.includes('YOUR-WORKER-SUBDOMAIN');
+}
+
+async function fetchViaWorker(symbol) {
+  if (!isWorkerConfigured()) throw new Error('worker not configured');
+  const res = await fetch(`${WORKER_BASE}/quote?symbol=${encodeURIComponent(symbol)}`);
+  if (!res.ok) throw new Error('worker http ' + res.status);
+  const q = await res.json();
+  if (typeof q.price !== 'number') throw new Error('worker bad payload');
+  return { price: q.price, prevClose: q.prevClose };
+}
+async function fetchViaCorsProxy(symbol) {
+  const yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=1d`;
+  const res = await fetch(`https://corsproxy.io/?url=${encodeURIComponent(yahooUrl)}`);
+  if (!res.ok) throw new Error('corsproxy http ' + res.status);
+  const data = await res.json();
+  const meta = data && data.chart && data.chart.result && data.chart.result[0] && data.chart.result[0].meta;
+  if (!meta) throw new Error('corsproxy bad payload');
+  return { price: meta.regularMarketPrice, prevClose: meta.previousClose };
+}
+async function fetchViaAllOrigins(symbol) {
+  const yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=1d`;
+  const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(yahooUrl)}`);
+  if (!res.ok) throw new Error('allorigins http ' + res.status);
   const json = await res.json();
   const data = JSON.parse(json.contents);
-  const meta = data.chart.result[0].meta;
-  return {
-    price: meta.regularMarketPrice,
-    prev: meta.previousClose,
-    change: meta.regularMarketPrice - meta.previousClose,
-    changePct: ((meta.regularMarketPrice - meta.previousClose) / meta.previousClose) * 100,
-  };
+  const meta = data && data.chart && data.chart.result && data.chart.result[0] && data.chart.result[0].meta;
+  if (!meta) throw new Error('allorigins bad payload');
+  return { price: meta.regularMarketPrice, prevClose: meta.previousClose };
 }
 
-function setQuote(elId, chgId, q, prefix='', decimals=2) {
+async function fetchQuote(symbol) {
+  const sources = [fetchViaWorker, fetchViaCorsProxy, fetchViaAllOrigins];
+  let lastErr;
+  for (const src of sources) {
+    try {
+      const q = await src(symbol);
+      return {
+        price: q.price, prev: q.prevClose,
+        change: q.price - q.prevClose,
+        changePct: q.prevClose ? ((q.price - q.prevClose) / q.prevClose) * 100 : 0,
+      };
+    } catch (e) { lastErr = e; }
+  }
+  throw lastErr;
+}
+
+function loadQuoteCache() {
+  try { return JSON.parse(localStorage.getItem(QUOTE_CACHE_KEY)) || {}; } catch (e) { return {}; }
+}
+function saveQuoteCache(cache) { localStorage.setItem(QUOTE_CACHE_KEY, JSON.stringify(cache)); }
+
+function setQuoteFromCache(elId, chgId, q, prefix = '', decimals = 2) {
   const el = document.getElementById(elId);
   const chgEl = document.getElementById(chgId);
-  if (!el) return;
+  if (!el || !q) return;
   el.textContent = prefix + q.price.toFixed(decimals);
   const sign = q.change >= 0 ? '+' : '';
   chgEl.textContent = `${sign}${q.changePct.toFixed(2)}%`;
@@ -641,51 +1016,81 @@ async function fetchAllQuotes() {
   dot.style.background = '#fbbf24';
   statusEl.textContent = '抓取中...';
 
-  try {
-    const [tw50, sp500, qqq, usd] = await Promise.all([
-      fetchQuote('0050.TW'),
-      fetchQuote('^GSPC'),
-      fetchQuote('QQQ'),
-      fetchQuote('TWD=X'),
-    ]);
+  const cache = loadQuoteCache();
+  const keys = ['tw50', 'sp500', 'qqq', 'usd'];
+  const results = await Promise.allSettled([
+    fetchQuote(QUOTE_SYMBOLS.tw50),
+    fetchQuote(QUOTE_SYMBOLS.sp500),
+    fetchQuote(QUOTE_SYMBOLS.qqq),
+    fetchQuote(QUOTE_SYMBOLS.usd),
+  ]);
 
-    setQuote('live-0050', 'live-0050-chg', tw50, 'NT$ ', 2);
-    setQuote('live-sp500', 'live-sp500-chg', sp500, '', 0);
-    setQuote('live-qqq', 'live-qqq-chg', qqq, '$', 2);
+  let anyLive = false, anyFail = false;
+  const now = Date.now();
+  results.forEach((r, i) => {
+    const key = keys[i];
+    if (r.status === 'fulfilled') { cache[key] = { ...r.value, ts: now }; anyLive = true; }
+    else { anyFail = true; console.warn(`quote ${key} failed:`, r.reason); }
+  });
+  saveQuoteCache(cache);
 
-    const usdEl = document.getElementById('live-usd');
-    usdEl.textContent = (1 / usd.price).toFixed(3);
+  setQuoteFromCache('live-0050', 'live-0050-chg', cache.tw50, 'NT$ ', 2);
+  setQuoteFromCache('live-sp500', 'live-sp500-chg', cache.sp500, '', 0);
+  setQuoteFromCache('live-qqq', 'live-qqq-chg', cache.qqq, '$', 2);
+  const usdEl = document.getElementById('live-usd');
+  if (cache.usd) usdEl.textContent = (1 / cache.usd.price).toFixed(3);
 
-    dot.style.background = '#34d399';
-    dot.style.boxShadow = '0 0 6px #34d399';
-    statusEl.textContent = '即時數據';
-  } catch(e) {
-    dot.style.background = '#f87171';
-    dot.style.boxShadow = 'none';
+  if (!anyFail) {
+    dot.style.background = '#34d399'; dot.style.boxShadow = '0 0 6px #34d399';
+    statusEl.textContent = isWorkerConfigured() ? '即時數據' : '即時數據（尚未設定 Worker，走備援代理）';
+  } else if (anyLive) {
+    dot.style.background = '#fbbf24'; dot.style.boxShadow = '0 0 6px #fbbf24';
+    statusEl.textContent = '部分數據取得失敗，已顯示可用資料';
+  } else if (cache.tw50 || cache.sp500 || cache.qqq) {
+    dot.style.background = '#f87171'; dot.style.boxShadow = 'none';
+    const mins = Math.round((now - Math.max(cache.tw50?.ts || 0, cache.sp500?.ts || 0, cache.qqq?.ts || 0)) / 60000);
+    statusEl.textContent = `即時抓取失敗，顯示 ${mins} 分鐘前的快取`;
+  } else {
+    dot.style.background = '#f87171'; dot.style.boxShadow = 'none';
     statusEl.textContent = '數據暫時無法取得';
-    console.warn('Quote fetch failed:', e);
   }
 }
 
-// ── 啟動 ──
-window.addEventListener('load', () => {
-  initCharts();
+// ── 啟動（僅在解鎖後執行）──
+function bootDashboard() {
+  cloneEditingFromState();
+  try {
+    initCharts();
+  } catch (e) {
+    // Chart.js 沒載入成功（例如網路問題）也不該讓整個儀表板掛掉，
+    // 其餘資料還是要能編輯/顯示。
+    console.warn('initCharts failed, charts will be skipped:', e);
+  }
+  renderHoldingsEditor();
+  renderLoanEditor();
+  renderMilestoneEditor();
+  fillSettingsInputs();
   renderDashboard();
   renderPerf();
 
-  // 填入儲存的數值到input
-  if (state.total !== DEFAULTS.total) document.getElementById('inp-total').value = state.total;
-  if (state.us !== DEFAULTS.us)       document.getElementById('inp-us').value = state.us;
-  if (state.tw !== DEFAULTS.tw)       document.getElementById('inp-tw').value = state.tw;
-  if (state.cash !== DEFAULTS.cash)   document.getElementById('inp-cash').value = state.cash;
-
   setTimeout(() => {
-    document.getElementById('progressBar').style.width = Math.min((state.total/GOAL)*100, 100) + '%';
+    const pct = state.goal > 0 ? (computeTotals(state).total / state.goal) * 100 : 0;
+    document.getElementById('progressBar').style.width = Math.min(Math.max(pct, 0), 100) + '%';
   }, 300);
 
   fetchAllQuotes();
-  // 每5分鐘自動重抓
   setInterval(fetchAllQuotes, 5 * 60 * 1000);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const lockInput = document.getElementById('lockInput');
+  lockInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') tryUnlock(); });
+
+  if (isAuthed()) {
+    showDashboard();
+  } else {
+    lockInput.focus();
+  }
 });
 </script>
 </body>
